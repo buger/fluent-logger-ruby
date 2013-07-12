@@ -211,7 +211,12 @@ class FluentLogger < LoggerBase
   end
 
   def connect!
-    @con = TCPSocket.new(@host, @port)
+    if defined?(EventMachine::Synchrony)
+      @con = EventMachine::Synchrony::TCPSocket.new(@host, @port)
+    else
+      @con = TCPSocket.new(@host, @port)
+    end
+    
     @con.sync = true
     @connect_error_history.clear
     @logged_reconnect_error = false
